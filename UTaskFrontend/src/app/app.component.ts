@@ -6,5 +6,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  isShowNavbar = false;
+  isActive = false;
   title = 'UTaskFrontend';
+
+  showNavbar(): void {
+    this.isShowNavbar = !this.isShowNavbar;
+  }
+
+  showMenu(): void {
+    this.isActive = !this.isActive;
+  }
 }
