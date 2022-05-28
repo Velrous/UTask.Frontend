@@ -1,8 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import {Note} from "../../models/note";
 import {NoteService} from "../../services/note.service";
-import {TableState} from "../../models/table-state";
-import { faPencil, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import {DataState} from "../../models/data-state";
+import {faMagnifyingGlass, faPencil, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import {CompositeFilter} from "../../models/composite-filter";
+import {FilterOptions} from "../../models/filter-options";
+import {SortingOptions} from "../../models/sorting-options";
 
 @Component({
   selector: 'app-notes',
@@ -13,18 +16,21 @@ export class NotesComponent implements OnInit {
 
   faPencil = faPencil;
   faTrashCan = faTrashCan;
+  faMagnifyingGlass = faMagnifyingGlass;
 
   notes: Note[] = [];
   editableNote?: Note;
-  tableState = new TableState(1, 5, 0);
+  descriptionFilter = new FilterOptions("Description", "contains", "");
+  dataState = new DataState(1,5,0, new CompositeFilter("and", []),
+    [ new SortingOptions("Created", "desc") ]);
   description: string = "";
 
   isLoading = false;
   isEdited = false;
-  test = "";
 
   constructor(
-    private service: NoteService ) { }
+    private service: NoteService
+  ) { }
 
   async createNote(): Promise<void> {
     //TODO Добавить вывод ошибки, если пустой текст
@@ -35,16 +41,17 @@ export class NotesComponent implements OnInit {
   }
 
   async applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.tableState.filter = filterValue;
+    this.descriptionFilter.value = (event.target as HTMLInputElement).value;
+    this.dataState.filter.options = [];
+    this.dataState.filter.options.push(this.descriptionFilter);
     await this.getNotes();
   }
 
   async getNotes(): Promise<void> {
     this.isLoading = true;
-    let pageData = await this.service.getNotes(this.tableState);
+    let pageData = await this.service.getNotes(this.dataState);
     this.notes = pageData.data;
-    this.tableState.collectionSize = pageData.totalCount;
+    this.dataState.collectionSize = pageData.totalCount;
     this.isLoading = false;
   }
 

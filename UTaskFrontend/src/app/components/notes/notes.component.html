@@ -8,8 +8,8 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="mb-3">
-                <label for="exampleFormControlTextarea1" class="form-label">Введите заметку</label>
-                <textarea [(ngModel)]="description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+                <label for="descriptionInput" class="form-label">Введите заметку</label>
+                <textarea [(ngModel)]="description" class="form-control" id="descriptionInput" rows="3"></textarea>
               </div>
               <div class="col text-end">
                 <a *ngIf="!isEdited" (click)="createNote()" class="btn btn-sm btn-primary">Добавить</a>
@@ -23,9 +23,13 @@
           <div class="card-header">
             <div class="table-responsive py-4">
               <div class="d-flex mb-2">
-                <label for="table-complete-search" class="col-xs-3 col-sm-auto col-form-label me-2">Поиск:</label>
                 <div class="col-xs-3 col-sm-auto">
-                  <input id="table-complete-search" type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)">
+                  <div class="input-group input-group-merge search-bar">
+                    <span class="input-group-text" id="topbar-addon">
+                      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                    </span>
+                    <input id="table-complete-search" id="topbarInputIconLeft" type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)" placeholder="Поиск" aria-describedby="topbar-addon">
+                  </div>
                 </div>
                 <span class="col col-form-label ms-2" *ngIf="isLoading">Загрузка...</span>
               </div>
@@ -60,10 +64,10 @@
                 </tbody>
               </table>
               <div class="d-flex justify-content-between">
-                <ngb-pagination class="pe-5" [collectionSize]="tableState.collectionSize" [(page)]="tableState.page" [pageSize]="tableState.pageSize" (pageChange)="getNotes()">
+                <ngb-pagination class="pe-5" [collectionSize]="dataState.collectionSize" [(page)]="dataState.page" [pageSize]="dataState.pageSize" (pageChange)="getNotes()">
                 </ngb-pagination>
 
-                <select class="form-select" style="width: auto" [(ngModel)]="tableState.pageSize" (ngModelChange)="getNotes()">
+                <select class="form-select" style="width: auto" [(ngModel)]="dataState.pageSize" (ngModelChange)="getNotes()">
                   <option [ngValue]="5">5 заметок на странице</option>
                   <option [ngValue]="10">10 заметок на странице</option>
                   <option [ngValue]="20">20 заметок на странице</option>

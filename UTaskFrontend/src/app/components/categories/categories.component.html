@@ -4,107 +4,70 @@
   <div class="col-12">
     <div class="row">
       <div class="col-12 mb-4">
-        <div class="card border-0 shadow">
+        <div class="card border-0 shadow mb-4">
           <div class="card-header">
             <div class="row align-items-center">
               <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Введите категорию</label>
-                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Название категории">
+                <label for="nameInput" class="form-label">Введите категорию</label>
+                <input [(ngModel)]="name" type="text" class="form-control" id="nameInput" placeholder="Название категории">
               </div>
               <div class="col text-end">
-                <a href="#" class="btn btn-sm btn-primary">Добавить</a>
+                <a *ngIf="!isEdited" (click)="createCategory()" class="btn btn-sm btn-primary">Добавить</a>
+                <a *ngIf="isEdited" (click)="updateCategory()" class="btn btn-sm btn-primary me-2">Сохранить</a>
+                <a *ngIf="isEdited" (click)="discardChange()" class="btn btn-sm btn-primary">Отмена</a>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow">
+          <div class="card-header">
             <div class="table-responsive py-4">
+              <div class="d-flex mb-2">
+                <div class="col-xs-3 d-flex col-sm-auto">
+                  <div class="input-group input-group-merge search-bar">
+                    <span class="input-group-text" id="topbar-addon">
+                      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                    </span>
+                    <input id="table-complete-search" id="topbarInputIconLeft" type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)" placeholder="Поиск" aria-describedby="topbar-addon">
+                  </div>
+                </div>
+                <span class="col col-form-label ms-2" *ngIf="isLoading">Загрузка...</span>
+              </div>
               <table class="table table-centered table-nowrap mb-0 rounded">
                 <thead class="thead-light">
                 <tr>
-                  <th class="border-0 rounded-start">Номер</th>
-                  <th class="border-0">Категория</th>
-                  <th class="border-0 rounded-end">Действие</th>
+                  <th class="border-0 rounded-start">Категория</th>
+                  <th class="border-0 text-center rounded-end">Действие</th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">1</td>
+                <tr *ngFor="let category of categories">
                   <td class="border-0">
                     <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Семья</span></div>
+                      <div><span class="">{{category.Name}}</span></div>
                     </a>
                   </td>
-                  <td class="border-0">
-                    <button class="btn btn-danger" type="button">Удалить</button>
+                  <td class="border-0 text-center">
+                    <button class="btn btn-gray-200 me-2" type="button" (click)="editCategory(category)">
+                      <fa-icon [icon]="faPencil"></fa-icon>
+                    </button>
+                    <button class="btn btn-danger" type="button" (click)="deleteCategory(category.Id)">
+                      <fa-icon [icon]="faTrashCan"></fa-icon>
+                    </button>
                   </td>
                 </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">2</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Работа</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">3</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Учёба</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">4</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Проекты</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">5</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Хобби</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">6</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Бытовое</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
                 </tbody>
               </table>
+              <div class="d-flex justify-content-between">
+                <ngb-pagination class="pe-5" [collectionSize]="dataState.collectionSize" [(page)]="dataState.page" [pageSize]="dataState.pageSize" (pageChange)="getCategories()">
+                </ngb-pagination>
+
+                <select class="form-select" style="width: auto" [(ngModel)]="dataState.pageSize" (ngModelChange)="getCategories()">
+                  <option [ngValue]="5">5 категорий на странице</option>
+                  <option [ngValue]="10">10 категорий на странице</option>
+                  <option [ngValue]="20">20 категорий на странице</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>
