@@ -3,19 +3,19 @@
 @import "assets/css/volt.css";
 
 
-.arrow {
+.arrow-plan {
   border: solid black;
   border-width: 0 3px 3px 0;
   display: inline-block;
   padding: 10px;
 }
 
-.right {
+.right-plan {
   transform: rotate(-45deg);
   -webkit-transform: rotate(-45deg);
 }
 
-.left {
+.left-plan {
   transform: rotate(135deg);
   -webkit-transform: rotate(135deg);
 }

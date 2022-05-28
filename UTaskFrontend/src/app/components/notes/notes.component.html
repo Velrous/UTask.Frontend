@@ -1,0 +1,78 @@
+<div class="py-4">
+</div>
+<div class="row">
+  <div class="col-12">
+    <div class="row">
+      <div class="col-12 mb-4">
+        <div class="card border-0 shadow mb-4">
+          <div class="card-header">
+            <div class="row align-items-center">
+              <div class="mb-3">
+                <label for="exampleFormControlTextarea1" class="form-label">Введите заметку</label>
+                <textarea [(ngModel)]="description" class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+              </div>
+              <div class="col text-end">
+                <a *ngIf="!isEdited" (click)="createNote()" class="btn btn-sm btn-primary">Добавить</a>
+                <a *ngIf="isEdited" (click)="updateNote()" class="btn btn-sm btn-primary me-2">Сохранить</a>
+                <a *ngIf="isEdited" (click)="discardChange()" class="btn btn-sm btn-primary">Отмена</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow">
+          <div class="card-header">
+            <div class="table-responsive py-4">
+              <div class="d-flex mb-2">
+                <label for="table-complete-search" class="col-xs-3 col-sm-auto col-form-label me-2">Поиск:</label>
+                <div class="col-xs-3 col-sm-auto">
+                  <input id="table-complete-search" type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)">
+                </div>
+                <span class="col col-form-label ms-2" *ngIf="isLoading">Загрузка...</span>
+              </div>
+              <table class="table table-centered table-nowrap mb-0 rounded">
+                <thead class="thead-light">
+                <tr>
+                  <th class="border-0 rounded-start">Заметка</th>
+                  <th class="border-0 text-center">Дата создания</th>
+                  <th class="border-0 rounded-end text-center">Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let note of notes">
+                  <td class="border-0">
+                    <a href="#" class="d-flex align-items-center">
+                      <div><span class="">{{note.Description}}</span></div>
+                    </a>
+                  </td>
+                  <td class="border-0 text-center">
+                    <span class="fas fa-angle-down"></span>
+                    <span class="font-weight-bold">{{note.Created | date : 'short'}}</span>
+                  </td>
+                  <td class="border-0 text-center">
+                    <button class="btn btn-gray-200 me-2" type="button" (click)="editNote(note)">
+                      <fa-icon [icon]="faPencil"></fa-icon>
+                    </button>
+                    <button class="btn btn-danger" type="button" (click)="deleteNote(note.Id)">
+                      <fa-icon [icon]="faTrashCan"></fa-icon>
+                    </button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-between">
+                <ngb-pagination class="pe-5" [collectionSize]="tableState.collectionSize" [(page)]="tableState.page" [pageSize]="tableState.pageSize" (pageChange)="getNotes()">
+                </ngb-pagination>
+
+                <select class="form-select" style="width: auto" [(ngModel)]="tableState.pageSize" (ngModelChange)="getNotes()">
+                  <option [ngValue]="5">5 заметок на странице</option>
+                  <option [ngValue]="10">10 заметок на странице</option>
+                  <option [ngValue]="20">20 заметок на странице</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
