@@ -26,7 +26,7 @@ export class GoalView {
     this.Created = created;
     this.PercentageCompletion = percentageCompletion;
     this.TaskDataState = new DataState(1,5,0, new CompositeFilter("and", []),
-      [new SortingOptions("Name", "asc")]);
+      [new SortingOptions("Created", "desc")]);
     this.TaskNameFilter = new FilterOptions("Name", "contains", "");
   }
 }

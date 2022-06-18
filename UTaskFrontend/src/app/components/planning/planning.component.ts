@@ -233,13 +233,13 @@ export class PlanningComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.taskDataState.sort.push(new SortingOptions('Created', "desc"));
+    this.planPriorities = await this.planPriorityService.getPlanPriorities();
+    this.dateModel = this.ngbCalendar.getToday();
+    await this.getPlans();
     this.taskTypeTableFilter.Objects = await this.taskTypeService.getTaskTypes();
     let categoryPageData = await this.categoryService.getCategories();
     categoryPageData.data.push(new Category(0, "Не задано", new Date()));
     categoryPageData.data.sort((a,b) => a.Id - b.Id);
     this.categoryTableFilter.Objects = categoryPageData.data;
-    await this.getPlans();
-    this.planPriorities = await this.planPriorityService.getPlanPriorities();
-    this.dateModel = this.ngbCalendar.getToday();
   }
 }

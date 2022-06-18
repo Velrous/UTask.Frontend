@@ -62,7 +62,7 @@ export class TasksComponent implements OnInit {
   nameFilter = new FilterOptions("Name", "contains", "");
   dataState = new DataState(1,5,0, new CompositeFilter("and", []), []);
   noteDescriptionFilter = new FilterOptions("Description", "contains", "");
-  noteDataState = new DataState(1,5,0, new CompositeFilter("and", []), [new SortingOptions("Name", "asc")]);
+  noteDataState = new DataState(1,5,0, new CompositeFilter("and", []), [new SortingOptions("Created", "desc")]);
 
   editableTask?: Task;
 

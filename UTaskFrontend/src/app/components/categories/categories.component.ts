@@ -24,7 +24,7 @@ export class CategoriesComponent implements OnInit {
   categories: Category[] = [];
   editableCategory?: Category;
   nameFilter = new FilterOptions("Name", "contains", "");
-  nameTableFilter: TableFilter = new TableFilter([], -1, true, false, false);
+  nameTableFilter: TableFilter = new TableFilter([], -1, false, true, false);
   dataState = new DataState(1,5,0, new CompositeFilter("and", []), []);
   name: string = "";
 

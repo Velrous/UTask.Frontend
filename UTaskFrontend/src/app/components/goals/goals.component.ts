@@ -154,7 +154,7 @@ export class GoalsComponent implements OnInit {
     goalView.IsNeedShowTasksToAdd = !goalView.IsNeedShowTasksToAdd;
     if(goalView.IsNeedShowTasksToAdd) {
       goalView.TaskDataState = new DataState(1,5,0, new CompositeFilter("and", []),
-        [new SortingOptions("Name", "asc")]);
+        [new SortingOptions("Created", "desc")]);
       goalView.TaskNameFilter = new FilterOptions("Name", "contains", "");
       await this.getTasksToAdd(goalView);
     }
