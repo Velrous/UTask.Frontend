@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {faArrowRightFromBracket, faGear, faUser } from '@fortawesome/free-solid-svg-icons';
 import {AuthService} from "../../auth/auth.service";
 import {AuthResultModel} from "../../auth/models/AuthResultModel";
 
@@ -8,6 +9,10 @@ import {AuthResultModel} from "../../auth/models/AuthResultModel";
   styleUrls: ['./main-body.component.css']
 })
 export class MainBodyComponent implements OnInit {
+
+  faUser = faUser;
+  faGear = faGear;
+  faArrowRightFromBracket = faArrowRightFromBracket;
 
   isLoggedIn = false;
   displayName = "";
@@ -30,7 +35,7 @@ export class MainBodyComponent implements OnInit {
   }
 
   isActive = false;
-  title = 'UTaskFrontend';
+  title = 'UTask';
 
   showMenu(): void {
     this.isActive = !this.isActive;

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {AuthService} from "../../auth.service";
 import {Router} from "@angular/router";
 import {AuthResultModel} from "../../models/AuthResultModel";
+import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-login',
@@ -9,6 +10,9 @@ import {AuthResultModel} from "../../models/AuthResultModel";
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
+
+  faEnvelope = faEnvelope;
+  faLock = faLock;
 
   constructor(
     private authService: AuthService,
@@ -18,16 +22,16 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   hasError = false;
   authModel = {
-    login: "",
-    password: ""
+    email: "",
+    password: "",
+    isNeedRemember: false
   };
 
   async logIn() {
-    console.log("authModel", this.authModel);
     this.isLoading = true;
     let authResult: AuthResultModel | null = null;
     try {
-      authResult = await this.authService.logIn(this.authModel.login, this.authModel.password);
+      authResult = await this.authService.logIn(this.authModel.email, this.authModel.password, this.authModel.isNeedRemember);
       this.isLoading = false;
     }
     catch (e) {
@@ -41,12 +45,12 @@ export class LoginComponent implements OnInit {
       if(authResult) {
         this.router.navigate(['./planning'])
       }
-    }, 10); //TODO разобраться зачем нужно?
+    }, 10);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     if(this.authService.isLoggedIn) {
-      this.router.navigate(['/']); //TODO разобраться что не нравится
+      await this.router.navigate(['/']);
     }
   }
 

@@ -4,174 +4,201 @@
   <div class="col-12">
     <div class="row">
       <div class="col-12 mb-4">
-        <div class="card border-0 shadow">
+        <div class="card border-0 shadow mb-4">
           <div class="card-header">
             <div class="row align-items-center">
               <form>
                 <div class="row">
                   <div>
-                    <label for="exampleFormControlInput1" class="form-label">Введите задачу</label>
-                    <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="Название категории">
+                    <label class="form-label">Создание задачи</label>
+                    <input [(ngModel)]="name" name="taskName" class="form-control" placeholder="Название задачи">
                   </div>
                 </div>
                 <div class="row mt-3">
                   <div class="col-md-6 mb-3">
                     <div>
                       <label for="taskType">Тип задачи</label>
-                      <select class="form-select w-100 mb-0" id="taskType" name="taskType" aria-label="State select example">
-                        <option value="AL">Важная, срочная</option>
-                        <option value="AK">Важная, не срочная</option>
-                        <option value="AZ">Не важная, срочная</option>
-                        <option value="AR">Не важная, не срочная</option>
+                      <select class="form-select w-100 mb-0" id="taskType" [(ngModel)]="selectedTaskTypeId" name="taskType">
+                        <option *ngFor="let taskType of taskTypes" [value]="taskType.Id">
+                          {{taskType.Name}}
+                        </option>
                       </select>
                     </div>
                   </div>
                   <div class="col-md-6 mb-3">
                     <div>
                       <label for="taskCategory">Категория задачи</label>
-                      <select class="form-select w-100 mb-0" id="taskCategory" name="taskCategory" aria-label="State select example">
-                        <option value="AL">Семья</option>
-                        <option value="AK">Работа</option>
-                        <option value="AZ">Учёба</option>
-                        <option value="AR">Хобби</option>
+                      <select class="form-select w-100 mb-0" id="taskCategory" [(ngModel)]="selectedCategoryId" name="taskCategory" aria-label="State select example">
+                        <option *ngFor="let category of categories" [value]="category.Id">
+                          {{category.Name}}
+                        </option>
                       </select>
                     </div>
                   </div>
                 </div>
                 <div class="row mt-3">
-                  <div class="col-md-9 mb-3">
-                    <div>
+                  <div class="col-md-6 mb-3">
+                    <div *ngIf="false">
                       <div class="input-group">
-                        <input class="form-control" placeholder="yyyy-mm-dd"
-                               name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker">
-                        <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
-                        <ngb-timepicker class="ms-4" name="timepicker" [(ngModel)]="time"></ngb-timepicker>
+                        <input class="form-control" placeholder="день-месяц-год"
+                               name="dp" [(ngModel)]="model" ngbDatepicker #c1="ngModel" #d="ngbDatepicker">
+                        <button class="btn btn-outline-secondary calendar me-4" (click)="d.toggle()" type="button"></button>
+                        <ngx-timepicker-field [(ngModel)]="selectedTime" name="timePicker" [clockTheme]="darkTheme" [format]="24" [defaultTime]="'12:00'"></ngx-timepicker-field>
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-3 mb-3">
+                  <div class="col-md-6 mb-3">
                     <div class="col text-end">
-                      <a href="#" class="btn btn-sm btn-primary">Добавить</a>
+                      <a (click)="showNotes()" class="btn btn-sm btn-primary me-2">Показать заметки</a>
+                      <a *ngIf="!isEdited" (click)="createTask()" class="btn btn-sm btn-primary">Добавить</a>
+                      <a *ngIf="isEdited" (click)="updateTask()" class="btn btn-sm btn-primary me-2">Сохранить</a>
+                      <a *ngIf="isEdited" (click)="discardChange()" class="btn btn-sm btn-primary">Отмена</a>
                     </div>
                   </div>
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+        <div *ngIf="isShowNotes" class="card border-0 shadow mb-4">
+          <div class="card-header">
             <div class="table-responsive py-4">
+              <div class="d-flex mb-2">
+                <div class="col-xs-3 col-sm-auto">
+                  <div class="input-group input-group-merge search-bar">
+                    <span class="input-group-text">
+                      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                    </span>
+                    <input type="text" class="form-control" name="searchTerm" (keyup)="applyNoteFilter($event)" placeholder="Поиск" aria-describedby="topbar-addon">
+                  </div>
+                </div>
+                <span class="col col-form-label ms-2" *ngIf="isNoteLoading">Загрузка...</span>
+              </div>
               <table class="table table-centered table-nowrap mb-0 rounded">
                 <thead class="thead-light">
                 <tr>
-                  <th class="border-0 rounded-start">Номер</th>
-                  <th class="border-0">Задача</th>
-                  <th class="border-0">Дата создания</th>
+                  <th class="border-0 rounded-start">Заметка</th>
+                  <th class="border-0 text-center">Дата создания</th>
                   <th class="border-0 rounded-end text-center">Действие</th>
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">1</td>
+                <tr *ngFor="let note of notes">
                   <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Посмотреть наручные часы</span></div>
+                    <a class="d-flex align-items-center">
+                      <div><span class="">{{note.Description}}</span></div>
                     </a>
                   </td>
-                  <td class="border-0">
+                  <td class="border-0 text-center">
                     <span class="fas fa-angle-down"></span>
-                    <span class="font-weight-bold">04.05.2022</span>
+                    <span class="font-weight-bold">{{note.Created | date : 'short'}}</span>
                   </td>
                   <td class="border-0 text-center">
-                    <button class="btn btn-danger" type="button">Удалить</button>
+                    <button class="btn btn-gray-200 me-2" type="button" (click)="name = note.Description">
+                      <fa-icon [icon]="faCopy"></fa-icon>
+                    </button>
+                    <button class="btn btn-danger" type="button" (click)="deleteNote(note.Id)">
+                      <fa-icon [icon]="faTrashCan"></fa-icon>
+                    </button>
                   </td>
                 </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">2</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Посмотреть фильм Гладиатор</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <span class="fas fa-angle-down"></span>
-                    <span class="font-weight-bold">03.05.2022</span>
-                  </td>
-                  <td class="border-0 text-center">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">3</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Спросить у Тани откуда заказывали пиццу на корпоратив</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <span class="fas fa-angle-down"></span>
-                    <span class="font-weight-bold">29.04.2022</span>
-                  </td>
-                  <td class="border-0 text-center">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">4</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Почитать про 3n+1</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <span class="fas fa-angle-down"></span>
-                    <span class="font-weight-bold">25.04.2022</span>
-                  </td>
-                  <td class="border-0 text-center">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">5</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Почитать статью на Хабр про Intel ME</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <span class="fas fa-angle-down"></span>
-                    <span class="font-weight-bold">21.04.2022</span>
-                  </td>
-                  <td class="border-0 text-center">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
-                <!-- Item -->
-                <tr>
-                  <td class="border-0 font-weight-bold">6</td>
-                  <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
-                      <div><span class="">Забрать блокнот с работы</span></div>
-                    </a>
-                  </td>
-                  <td class="border-0">
-                    <span class="fas fa-angle-down"></span>
-                    <span class="font-weight-bold">15.04.2022</span>
-                  </td>
-                  <td class="border-0 text-center">
-                    <button class="btn btn-danger" type="button">Удалить</button>
-                  </td>
-                </tr>
-                <!-- End of Item -->
                 </tbody>
               </table>
+              <div class="d-flex justify-content-between mt-2">
+                <ngb-pagination class="pe-5" [collectionSize]="noteDataState.collectionSize" [(page)]="noteDataState.page" [pageSize]="noteDataState.pageSize" (pageChange)="getNotes()">
+                </ngb-pagination>
+
+                <select class="form-select" style="width: auto" [(ngModel)]="noteDataState.pageSize" (ngModelChange)="getNotes()">
+                  <option [ngValue]="5">5 заметок на странице</option>
+                  <option [ngValue]="10">10 заметок на странице</option>
+                  <option [ngValue]="20">20 заметок на странице</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow">
+          <div class="card-header">
+            <div class="table-responsive py-4">
+              <div class="d-flex mb-2">
+                <div class="col-xs-3 d-flex col-sm-auto">
+                  <div class="input-group input-group-merge search-bar">
+                    <span class="input-group-text">
+                      <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                    </span>
+                    <input type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)" placeholder="Поиск">
+                  </div>
+                </div>
+                <span class="col col-form-label ms-2" *ngIf="isLoading">Загрузка...</span>
+              </div>
+              <table class="table table-centered table-nowrap mb-0 rounded">
+                <thead class="thead-light">
+                <tr>
+                  <th class="border-0 rounded-start">Задача
+                    <button (click)="openNameTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 text-center">Тип задачи
+                    <button (click)="openTaskTypeTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 text-center">Категория
+                    <button (click)="openCategoryTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 text-center">Дата создания
+                    <button (click)="openCreateDateTimeTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 text-center">Статус выполнения
+                    <button (click)="openIsCompleteTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th style="padding-bottom: 0.875rem" class="border-0 rounded-end text-center">Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr [ngClass]="taskView.IsComplete ? 'table-primary' : ''" *ngFor="let taskView of taskViews">
+                  <td class="border-0">
+                    <a class="d-flex align-items-center">
+                      <div><span class="" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.Name}}</span></div>
+                    </a>
+                  </td>
+                  <td class="border-0 font-weight-bold text-center" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.TaskTypeName}}</td>
+                  <td class="border-0 font-weight-bold text-center" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.CategoryName}}</td>
+                  <td class="border-0 text-center">
+                    <span class="fas fa-angle-down"></span>
+                    <span class="font-weight-bold" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.Created | date : 'short'}}</span>
+                  </td>
+                  <td class="border-0 text-center">
+                    <input style="width: 2em; height: 2em" class="form-check-input" type="checkbox" [ngModel]="taskView.IsComplete" (ngModelChange)="changeExecutionStatus(taskView)" id="remember">
+                  </td>
+                  <td class="border-0 text-center">
+                    <button class="btn btn-gray-200 me-2" type="button" *ngIf="!taskView.IsComplete" (click)="editTask(taskView)">
+                      <fa-icon [icon]="faPencil"></fa-icon>
+                    </button>
+                    <button class="btn btn-danger" type="button" (click)="deleteTask(taskView.Id)">
+                      <fa-icon [icon]="faTrashCan"></fa-icon>
+                    </button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-between mt-2">
+                <ngb-pagination class="pe-5" [collectionSize]="dataState.collectionSize" [(page)]="dataState.page" [pageSize]="dataState.pageSize" (pageChange)="getTasks()">
+                </ngb-pagination>
+
+                <select class="form-select" style="width: auto" [(ngModel)]="dataState.pageSize" (ngModelChange)="getTasks()">
+                  <option [ngValue]="5">5 задач на странице</option>
+                  <option [ngValue]="10">10 задач на странице</option>
+                  <option [ngValue]="20">20 задач на странице</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

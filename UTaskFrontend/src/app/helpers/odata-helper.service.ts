@@ -17,7 +17,10 @@ export class OdataHelperService {
         let filterOptions = dataState.filter.options[i];
         switch (filterOptions.operator) {
           case "contains":
-            odataString += `contains(${filterOptions.field},'${filterOptions.value}')`;
+            odataString += `contains(tolower(${filterOptions.field}),tolower('${filterOptions.value}'))`;
+            break;
+          case "eq":
+            odataString += `${filterOptions.field} eq ${filterOptions.value}`;
         }
         if(i !== dataState.filter.options.length - 1)
         {

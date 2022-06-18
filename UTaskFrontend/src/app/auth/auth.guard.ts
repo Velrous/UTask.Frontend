@@ -26,14 +26,13 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         return true;
       }
     }
-
     await this.router.navigate(['/Login']);
     return false;
   }
 
   async canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<any> {
     if(this.authService.isLoggedIn) {
-      return true; //TODO Почитать, как правильно, а то пока выглядит как дубликат кода выше
+      return true;
     }
     else {
       let logged = null;
@@ -46,7 +45,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
         return true;
       }
     }
-
     await this.router.navigate(['/Login']);
     return false;
   }

@@ -8,7 +8,7 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="mb-3">
-                <label for="nameInput" class="form-label">Введите категорию</label>
+                <label for="nameInput" class="form-label">Создание категории</label>
                 <input [(ngModel)]="name" type="text" class="form-control" id="nameInput" placeholder="Название категории">
               </div>
               <div class="col text-end">
@@ -25,10 +25,10 @@
               <div class="d-flex mb-2">
                 <div class="col-xs-3 d-flex col-sm-auto">
                   <div class="input-group input-group-merge search-bar">
-                    <span class="input-group-text" id="topbar-addon">
+                    <span class="input-group-text">
                       <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
                     </span>
-                    <input id="table-complete-search" id="topbarInputIconLeft" type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)" placeholder="Поиск" aria-describedby="topbar-addon">
+                    <input type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)" placeholder="Поиск">
                   </div>
                 </div>
                 <span class="col col-form-label ms-2" *ngIf="isLoading">Загрузка...</span>
@@ -36,14 +36,18 @@
               <table class="table table-centered table-nowrap mb-0 rounded">
                 <thead class="thead-light">
                 <tr>
-                  <th class="border-0 rounded-start">Категория</th>
+                  <th class="border-0 rounded-start">Категория
+                    <button (click)="openNameTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
                   <th class="border-0 text-center rounded-end">Действие</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let category of categories">
                   <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
+                    <a class="d-flex align-items-center">
                       <div><span class="">{{category.Name}}</span></div>
                     </a>
                   </td>
@@ -58,7 +62,7 @@
                 </tr>
                 </tbody>
               </table>
-              <div class="d-flex justify-content-between">
+              <div class="d-flex justify-content-between mt-2">
                 <ngb-pagination class="pe-5" [collectionSize]="dataState.collectionSize" [(page)]="dataState.page" [pageSize]="dataState.pageSize" (pageChange)="getCategories()">
                 </ngb-pagination>
 

@@ -4,209 +4,213 @@
   <div class="col-12">
     <div class="row">
       <div class="col-12 mb-4">
-        <div class="card border-0 shadow">
+        <div class="card border-0 shadow mb-4">
           <div class="card-header">
             <div class="row align-items-center">
               <div class="card-header border-bottom d-flex align-items-center justify-content-between">
                 <h2 class="fs-5 fw-bold mb-0">Планирование</h2>
               </div>
               <div class="card-body">
-                <div class="row align-items-center">
-                  <div class="col text-center">
-                    <button class="btn btn-md" (click)="addDay(-1)">
-                      <span class="arrow-plan left-plan"></span>
+                <div class="row">
+                  <div class="col-md-3">
+                    <div>
+                      <label for="planPriority">Приоритет</label>
+                      <select class="form-select w-100 mb-0" id="planPriority" [(ngModel)]="selectedPlanPriorityId" (ngModelChange)="isHaveChanges = true" name="planPriority" aria-label="State select example">
+                        <option *ngFor="let planPriority of planPriorities" [value]="planPriority.Id">
+                          {{planPriority.Name}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div>
+                      <div>
+                        <label>Дата</label>
+                        <div class="input-group">
+                          <input class="form-control" placeholder="день-месяц-год"
+                                 name="dp" [(ngModel)]="dateModel" (ngModelChange)="isHaveChanges = true" ngbDatepicker #c1="ngModel" #d="ngbDatepicker">
+                          <button class="btn btn-outline-gray-300 calendar me-4" (click)="d.toggle()" type="button"></button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div>
+                      <div>
+                        <label>Задача</label>
+                        <div class="input-group">
+                          <input class="form-control" placeholder="Выберите задачу" readonly [(ngModel)]=" selectedTaskView.Name">
+                          <button class="btn btn-outline-gray-300 me-4" type="button" (click)="showTasks()">
+                              <fa-icon style="color: #5e5e5e" [icon]="faPlus"></fa-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col text-end mt-3">
+                  <a *ngIf="!isEdited" (click)="createPlan()" class="btn btn-sm btn-primary me-2">Добавить</a>
+                  <a *ngIf="isEdited" (click)="updatePlan()" class="btn btn-sm btn-primary me-2">Сохранить</a>
+                  <a *ngIf="isHaveChanges" (click)="discardChange()" class="btn btn-sm btn-primary">Отмена</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="isShowTasks" class="card border-0 shadow mb-4">
+          <div class="card-header">
+            <div class="card-body table-responsive">
+              <div class="border-bottom mb-2">
+                <div class="d-flex align-items-center justify-content-between mt-2">
+                  <h6 class="fw-bold mb-0">Выбор задачи</h6>
+                </div>
+                <div class="d-flex mb-2 mt-2">
+                  <div class="col-xs-3 d-flex col-sm-auto">
+                    <div class="input-group input-group-merge search-bar">
+                            <span class="input-group-text">
+                              <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
+                            </span>
+                      <input type="text" class="form-control" name="searchTerm" (keyup)="applyTaskFilter($event)" placeholder="Поиск">
+                    </div>
+                  </div>
+                  <span class="col col-form-label ms-2" *ngIf="isTaskLoading">Загрузка...</span>
+                </div>
+              </div>
+              <table class="table table-centered table-nowrap mb-0 rounded">
+                <thead class="thead-light">
+                <tr>
+                  <th class="border-0 rounded-start">Задача
+                    <button (click)="openNameTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
                     </button>
-                  </div>
-                  <div class="col text-center">
-                    <h5>{{currentDate}}</h5>
-                  </div>
-                  <div class="col text-center">
-                    <button class="btn btn-md" (click)="addDay(1)">
-                      <span class="arrow-plan right-plan"></span>
+                  </th>
+                  <th class="border-0 text-center">Тип задачи
+                    <button (click)="openTaskTypeTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
                     </button>
-                  </div>
+                  </th>
+                  <th class="border-0 text-center">Категория
+                    <button (click)="openCategoryTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 text-center">Дата создания
+                    <button (click)="openCreateDateTimeTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 text-center">Статус выполнения
+                    <button (click)="openIsCompleteTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 rounded-end text-center">Действие</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr [ngClass]="taskView.IsComplete ? 'table-primary' : ''" *ngFor="let taskView of taskViews">
+                  <td class="border-0">
+                    <div class="d-flex align-items-center">
+                      <span class="" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.Name}}</span>
+                    </div>
+                  </td>
+                  <td class="border-0 font-weight-bold text-center" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.TaskTypeName}}</td>
+                  <td class="border-0 font-weight-bold text-center" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.CategoryName}}</td>
+                  <td class="border-0 text-center">
+                    <span class="fas fa-angle-down"></span>
+                    <span class="font-weight-bold" [ngClass]="taskView.IsComplete ? 'text-decoration: line-through' : ''">{{taskView.Created | date : 'short'}}</span>
+                  </td>
+                  <td class="border-0 text-center">
+                    <input style="width: 2em; height: 2em" class="form-check-input" disabled="disabled" type="checkbox" [ngModel]="taskView.IsComplete">
+                  </td>
+                  <td class="border-0 text-center">
+                    <button class="btn btn-gray-200" type="button" (click)="selectTask(taskView)">
+                      <fa-icon [icon]="faPlus"></fa-icon>
+                    </button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="d-flex justify-content-between mt-2">
+                <ngb-pagination class="pe-5" [collectionSize]="taskDataState.collectionSize" [(page)]="taskDataState.page" [pageSize]="taskDataState.pageSize" (pageChange)="getTasks()">
+                </ngb-pagination>
+
+                <select class="form-select" style="width: auto" [(ngModel)]="taskDataState.pageSize" (ngModelChange)="getTasks()">
+                  <option [ngValue]="5">5 задач на странице</option>
+                  <option [ngValue]="10">10 задач на странице</option>
+                  <option [ngValue]="20">20 задач на странице</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card border-0 shadow">
+          <div class="card-header">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col text-center">
+                  <button class="btn btn-md" (click)="addDay(-1)">
+                    <span class="arrow-plan left-plan"></span>
+                  </button>
+                </div>
+                <div class="col text-center">
+                  <h5>{{currentDate}}</h5>
+                </div>
+                <div class="col text-center">
+                  <button class="btn btn-md" (click)="addDay(1)">
+                    <span class="arrow-plan right-plan"></span>
+                  </button>
                 </div>
               </div>
               <div class="table-responsive py-4">
-                <table class="table table-centered table-nowrap mb-0 rounded">
+                <div *ngIf="isLoading" class="text-center">
+                  <span class="col col-form-label ms-2">Загрузка...</span>
+                </div>
+                <table *ngIf="!isLoading" class="table table-centered table-nowrap mb-0 rounded">
                   <thead class="thead-light">
                   <tr>
-                    <th class="border-0 rounded-start text-center">Задача</th>
+                    <th class="border-0 rounded-start text-center">Номер</th>
+                    <th class="border-0 ">Задача</th>
                     <th class="border-0 text-center">Тип задачи</th>
                     <th class="border-0 text-center">Категория</th>
-                    <th class="border-0 rounded-end text-center">Статус выполнения</th>
+                    <th class="border-0 text-center">Статус выполнения</th>
+                    <th class="border-0 rounded-end text-center">Действие</th>
                   </tr>
                   </thead>
                   <tbody>
-                  <!-- Item -->
-                  <tr class="table-danger">
+                  <tr [ngClass]="planView.PlanPriorityValue" *ngFor="let planView of planViews">
+                    <td class="border-0 text-center">
+                      <div><span [ngClass]="planView.IsComplete ? 'text-decoration: line-through' : ''">{{planViews.indexOf(planView) + 1}}</span></div>
+                    </td>
                     <td class="border-0">
-                      <a href="#" class="d-flex align-items-center">
-                        <div><span class="fw-bold">Посмотреть наручные часы</span></div>
+                      <a class="d-flex align-items-center">
+                        <div><span [ngClass]="planView.IsComplete ? 'text-decoration: line-through' : ''">{{planView.TaskName}}</span></div>
                       </a>
                     </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" id="taskType" name="taskType" aria-label="State select example">
-                        <option value="AL">Важная, срочная</option>
-                        <option value="AK">Важная, не срочная</option>
-                        <option value="AZ">Не важная, срочная</option>
-                        <option value="AR">Не важная, не срочная</option>
-                      </select>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskCategory" aria-label="State select example">
-                        <option value="AL">Семья</option>
-                        <option value="AK">Работа</option>
-                        <option value="AZ">Учёба</option>
-                        <option value="AR">Хобби</option>
-                      </select>
+                    <td class="border-0 text-center">
+                      <div><span [ngClass]="planView.IsComplete ? 'text-decoration: line-through' : ''">{{planView.TaskTypeName}}</span></div>
                     </td>
                     <td class="border-0 text-center">
-                      <input class="form-check-input" style="width: 30px; height: 30px" type="checkbox" value="">
-                    </td>
-                  </tr>
-                  <!-- End of Item -->
-                  <!-- End of Item -->
-                  <!-- Item -->
-                  <tr class="table-info">
-                    <td class="border-0">
-                      <a href="#" class="d-flex align-items-center">
-                        <div><span class="fw-bold">Посмотреть фильм Гладиатор</span></div>
-                      </a>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskType" aria-label="State select example">
-                        <option value="AL">Важная, срочная</option>
-                        <option value="AK">Важная, не срочная</option>
-                        <option value="AZ">Не важная, срочная</option>
-                        <option value="AR">Не важная, не срочная</option>
-                      </select>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskCategory" aria-label="State select example">
-                        <option value="AL">Семья</option>
-                        <option value="AK">Работа</option>
-                        <option value="AZ">Учёба</option>
-                        <option value="AR">Хобби</option>
-                      </select>
+                      <div><span [ngClass]="planView.IsComplete ? 'text-decoration: line-through' : ''">{{planView.CategoryName}}</span></div>
                     </td>
                     <td class="border-0 text-center">
-                      <input class="form-check-input" style="width: 30px; height: 30px" type="checkbox" value="">
-                    </td>
-                  </tr>
-                  <!-- End of Item -->
-                  <!-- Item -->
-                  <tr class="table-info">
-                    <td class="border-0">
-                      <a href="#" class="d-flex align-items-center">
-                        <div><span class="fw-bold">Спросить у Тани откуда заказывали пиццу на корпоратив</span></div>
-                      </a>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskType" aria-label="State select example">
-                        <option value="AL">Важная, срочная</option>
-                        <option value="AK">Важная, не срочная</option>
-                        <option value="AZ">Не важная, срочная</option>
-                        <option value="AR">Не важная, не срочная</option>
-                      </select>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskCategory" aria-label="State select example">
-                        <option value="AL">Семья</option>
-                        <option value="AK">Работа</option>
-                        <option value="AZ">Учёба</option>
-                        <option value="AR">Хобби</option>
-                      </select>
+                      <input style="width: 2em; height: 2em" class="form-check-input" type="checkbox" [ngModel]="planView.IsComplete" (ngModelChange)="changeExecutionStatus(planView)" id="remember">
                     </td>
                     <td class="border-0 text-center">
-                      <input class="form-check-input" style="width: 30px; height: 30px" type="checkbox" value="">
+                      <button class="btn btn-gray-200 me-2" type="button" (click)="decreasePosition(planView.Id)">
+                        <fa-icon [icon]="faArrowUp"></fa-icon>
+                      </button>
+                      <button class="btn btn-gray-200 me-2" type="button" (click)="increasePosition(planView.Id)">
+                        <fa-icon [icon]="faArrowDown"></fa-icon>
+                      </button>
+                      <button *ngIf="!planView.IsComplete" class="btn btn-gray-200 me-2" type="button" (click)="editPlan(planView)">
+                        <fa-icon [icon]="faPencil"></fa-icon>
+                      </button>
+                      <button class="btn btn-danger" type="button" (click)="deletePlan(planView.Id)">
+                        <fa-icon [icon]="faTrashCan"></fa-icon>
+                      </button>
                     </td>
                   </tr>
-                  <!-- End of Item -->
-                  <!-- Item -->
-                  <tr class="table-info">
-                    <td class="border-0">
-                      <a href="#" class="d-flex align-items-center">
-                        <div><span class="fw-bold">Почитать про 3n+1</span></div>
-                      </a>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskType" aria-label="State select example">
-                        <option value="AL">Важная, срочная</option>
-                        <option value="AK">Важная, не срочная</option>
-                        <option value="AZ">Не важная, срочная</option>
-                        <option value="AR">Не важная, не срочная</option>
-                      </select>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskCategory" aria-label="State select example">
-                        <option value="AL">Семья</option>
-                        <option value="AK">Работа</option>
-                        <option value="AZ">Учёба</option>
-                        <option value="AR">Хобби</option>
-                      </select>
-                    </td>
-                    <td class="border-0 text-center">
-                      <input class="form-check-input" style="width: 30px; height: 30px" type="checkbox" value="">
-                    </td>
-                  </tr>
-                  <!-- End of Item -->
-                  <!-- Item -->
-                  <tr class="table-success">
-                    <td class="border-0">
-                      <a href="#" class="d-flex align-items-center">
-                        <div><span class="fw-bold">Почитать статью на Хабр про Intel ME</span></div>
-                      </a>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskType" aria-label="State select example">
-                        <option value="AL">Важная, срочная</option>
-                        <option value="AK">Важная, не срочная</option>
-                        <option value="AZ">Не важная, срочная</option>
-                        <option value="AR">Не важная, не срочная</option>
-                      </select>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskCategory" aria-label="State select example">
-                        <option value="AL">Семья</option>
-                        <option value="AK">Работа</option>
-                        <option value="AZ">Учёба</option>
-                        <option value="AR">Хобби</option>
-                      </select>
-                    </td>
-                    <td class="border-0 text-center">
-                      <input class="form-check-input" style="width: 30px; height: 30px" type="checkbox" value="">
-                    </td>
-                  </tr>
-                  <!-- End of Item -->
-                  <!-- Item -->
-                  <tr class="table-success">
-                    <td class="border-0">
-                      <a href="#" class="d-flex align-items-center">
-                        <div><span class="fw-bold">Забрать блокнот с работы</span></div>
-                      </a>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskType" aria-label="State select example">
-                        <option value="AL">Важная, срочная</option>
-                        <option value="AK">Важная, не срочная</option>
-                        <option value="AZ">Не важная, срочная</option>
-                        <option value="AR">Не важная, не срочная</option>
-                      </select>
-                    </td>
-                    <td class="border-0">
-                      <select class="form-select w-100 mb-0 fw-bolder" name="taskCategory" aria-label="State select example">
-                        <option value="AL">Семья</option>
-                        <option value="AK">Работа</option>
-                        <option value="AZ">Учёба</option>
-                        <option value="AR">Хобби</option>
-                      </select>
-                    </td>
-                    <td class="border-0 text-center">
-                      <input class="form-check-input" style="width: 30px; height: 30px" type="checkbox" value="">
-                    </td>
-                  </tr>
-                  <!-- End of Item -->
                   </tbody>
                 </table>
               </div>

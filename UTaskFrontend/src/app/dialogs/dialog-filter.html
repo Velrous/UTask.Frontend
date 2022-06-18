@@ -1,0 +1,30 @@
+<h1 class="text-center" mat-dialog-title>Фильтрация</h1>
+<div mat-dialog-content>
+  <div class="row mb-2">
+    <button class="btn-table-header" (click)="sortAsc()" [style.background-color]="data.Asc ? 'lightgray' : ''" type="button">
+      <fa-icon [icon]="faArrowUp"></fa-icon>
+      Сортировать по возрастанию
+    </button>
+  </div>
+  <div class="row mb-4">
+    <button class="btn-table-header" (click)="sortDesc()" [style.background-color]="data.Desc ? 'lightgray' : ''" type="button">
+      <fa-icon [icon]="faArrowDown"></fa-icon>
+      Сортировать по убыванию
+    </button>
+  </div>
+  <div *ngIf="data.IsNeedShowObjects" class="row">
+    <select class="form-select" [(ngModel)]="selectedId" name="objectSelect">
+      <option *ngFor="let object of data.Objects" [value]="object.Id">
+        {{object.Name}}
+      </option>
+    </select>
+  </div>
+</div>
+<div mat-dialog-actions class="row text-center">
+  <div class="col">
+    <button class="btn btn-gray-800" (click)="confirm()">Принять</button>
+  </div>
+  <div class="col">
+    <button class="btn btn-gray-800" (click)="clear()">Очистить</button>
+  </div>
+</div>

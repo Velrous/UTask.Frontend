@@ -6,6 +6,7 @@ import {AuthRoutingModule} from "./auth-routing.module";
 import {AuthService} from "./auth.service";
 import {FormsModule} from "@angular/forms";
 import {RegisterComponent} from "./components/register/register.component";
+import {FontAwesomeModule} from "@fortawesome/angular-fontawesome";
 
 
 
@@ -15,11 +16,12 @@ import {RegisterComponent} from "./components/register/register.component";
     RegisterComponent,
     LogoutComponent
   ],
-  imports: [
-    CommonModule,
-    AuthRoutingModule,
-    FormsModule
-  ],
+    imports: [
+        CommonModule,
+        AuthRoutingModule,
+        FormsModule,
+        FontAwesomeModule
+    ],
   providers: [AuthService]
 })
 export class AuthModule { }

@@ -8,65 +8,43 @@
         <div class="row">
           <div class="col-md-6 mb-3">
             <div>
-              <label for="first_name">Имя</label>
-              <input class="form-control" id="first_name" type="text" placeholder="Введите своё имя" required>
+              <label for="displayName">Имя пользователя</label>
+              <input [(ngModel)]="user.DisplayName" name="displayName" class="form-control" id="displayName" type="text" placeholder="Имя пользователя" required>
             </div>
           </div>
           <div class="col-md-6 mb-3">
-            <div>
-              <label for="last_name">Фамилия</label>
-              <input class="form-control" id="last_name" type="text" placeholder="Введите свою фамилию" required>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input [(ngModel)]="user.Email" name="email" class="form-control" id="email" type="email" placeholder="example@mail.ru" required>
             </div>
           </div>
         </div>
         <div class="row align-items-center">
           <div class="col-md-6 mb-3">
-            <label for="birthday">Дата рождения</label>
-            <div class="input-group">
-              <input class="form-control" placeholder="yyyy-mm-dd" id="birthday"
-                     name="dp" [(ngModel)]="model" ngbDatepicker #d="ngbDatepicker">
-              <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"></button>
+            <div class="form-group">
+              <label for="oldPassword">Старый пароль</label>
+              <input [(ngModel)]="oldPassword" name="oldPassword" class="form-control" id="oldPassword" type="password" placeholder="Старый пароль" required>
             </div>
           </div>
-          <div class="col-md-6 mb-3">
-            <label for="gender">Пол</label>
-            <select class="form-select mb-0" id="gender" aria-label="Gender select example">
-              <option value="1">Мужской</option>
-              <option value="2">Женский</option>
-            </select>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-md-6 mb-3">
             <div class="form-group">
-              <label for="email">Email</label>
-              <input class="form-control" id="email" type="email" placeholder="name@mail.ru" required>
+              <label for="newPassword">Новый пароль</label>
+              <input [(ngModel)]="newPassword" name="newPassword" class="form-control" id="newPassword" type="password" placeholder="Новый пароль" required>
             </div>
           </div>
+        </div>
+        <div class="row align-items-center">
           <div class="col-md-6 mb-3">
+            <div class="form-group">
+              <label for="newConfirmPassword">Подтверждение нового пароля</label>
+              <input [(ngModel)]="newConfirmPassword" name="newConfirmPassword" class="form-control" id="newConfirmPassword" type="password" placeholder="Подтверждение нового пароля" required>
+            </div>
           </div>
         </div>
         <div class="text-end">
-          <button class="btn btn-gray-800 mt-2 animate-up-2" type="submit">Сохранить данные</button>
+          <button (click)="updateUser()" class="btn btn-gray-800 mt-2 animate-up-2" type="submit">Сохранить данные</button>
         </div>
       </form>
-    </div>
-    <div class="card card-body border-0 shadow mb-4 mb-xl-0">
-      <h2 class="h5 mb-4">Оформление и уведомления</h2>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item d-flex align-items-center justify-content-between px-0">
-          <div>
-            <h3 class="h6 mb-1">Уведомления о задачах</h3>
-            <p class="small pe-4">Будут ли в браузере показываться уведомления о необходимости выполнения задач</p>
-          </div>
-          <div>
-            <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="user-notification-2" checked>
-              <label class="form-check-label" for="user-notification-2"></label>
-            </div>
-          </div>
-        </li>
-      </ul>
     </div>
   </div>
 </div>

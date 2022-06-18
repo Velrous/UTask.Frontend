@@ -2,6 +2,8 @@ import {EventEmitter, Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {CookieService} from "ngx-cookie-service";
 import {AuthResultModel} from "./models/AuthResultModel";
+import {RegisterModel} from "./models/register-model";
+import {lastValueFrom} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +19,6 @@ export class AuthService {
   private _isLoggedIn = false;
   private _authResult: AuthResultModel | undefined;
   private _authToken: string = "";
-  //private _redirectUrl: string | undefined;
 
   get isLoggedIn(): boolean {
     return this._isLoggedIn;
@@ -35,13 +36,38 @@ export class AuthService {
     return this._authToken || null;
   }
 
-  async logIn(login: string, password: string): Promise<AuthResultModel | null> {
+  async register(registerModel: RegisterModel): Promise<AuthResultModel | null> {
     let authResult: AuthResultModel | null = null;
 
-    const authRequest = await this.http.post<any>("api/Auth/Login", {
-      login: login,
-      password: password
-    }).toPromise();
+    const authRequest = await this.http.post<any>("api/Auth/Register", registerModel).toPromise();
+
+    if(authRequest)
+    {
+      authResult = new AuthResultModel(
+        authRequest.DisplayName,
+        authRequest.Token,
+        authRequest.ErrorText,
+        authRequest.IsSuccess
+      );
+      this._authResult = authResult;
+    }
+
+    this._isLoggedIn = !!authResult;
+    this._authToken = authResult?.Token || "";
+    this.cookies.set('Token', this._authToken);
+    this.AuthStatusChanged.emit(authResult);
+
+    return authResult;
+  }
+
+  async logIn(email: string, password: string, isNeedRemember: boolean): Promise<AuthResultModel | null> {
+    let authResult: AuthResultModel | null = null;
+
+    const authRequest = await lastValueFrom(this.http.post<any>("api/Auth/Login", {
+      email: email,
+      password: password,
+      isNeedRemember: isNeedRemember
+    }));
 
     if(authRequest)
     {
@@ -80,7 +106,7 @@ export class AuthService {
     }
 
     let authResult: AuthResultModel | null = null;
-    const authRequest = await this.http.get<any>('api/Auth/LoginByToken').toPromise();
+    const authRequest = await lastValueFrom(this.http.get<any>('api/Auth/LoginByToken'));
 
     if(authRequest) {
       authResult = new AuthResultModel(

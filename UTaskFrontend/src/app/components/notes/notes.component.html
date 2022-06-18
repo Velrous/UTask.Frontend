@@ -8,8 +8,8 @@
           <div class="card-header">
             <div class="row align-items-center">
               <div class="mb-3">
-                <label for="descriptionInput" class="form-label">Введите заметку</label>
-                <textarea [(ngModel)]="description" class="form-control" id="descriptionInput" rows="3"></textarea>
+                <label for="descriptionInput" class="form-label">Создание заметки</label>
+                <textarea [(ngModel)]="description" placeholder="Описание" class="form-control" id="descriptionInput" rows="3"></textarea>
               </div>
               <div class="col text-end">
                 <a *ngIf="!isEdited" (click)="createNote()" class="btn btn-sm btn-primary">Добавить</a>
@@ -25,10 +25,10 @@
               <div class="d-flex mb-2">
                 <div class="col-xs-3 col-sm-auto">
                   <div class="input-group input-group-merge search-bar">
-                    <span class="input-group-text" id="topbar-addon">
+                    <span class="input-group-text">
                       <fa-icon [icon]="faMagnifyingGlass"></fa-icon>
                     </span>
-                    <input id="table-complete-search" id="topbarInputIconLeft" type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)" placeholder="Поиск" aria-describedby="topbar-addon">
+                    <input type="text" class="form-control" name="searchTerm" (keyup)="applyFilter($event)" placeholder="Поиск">
                   </div>
                 </div>
                 <span class="col col-form-label ms-2" *ngIf="isLoading">Загрузка...</span>
@@ -36,15 +36,23 @@
               <table class="table table-centered table-nowrap mb-0 rounded">
                 <thead class="thead-light">
                 <tr>
-                  <th class="border-0 rounded-start">Заметка</th>
-                  <th class="border-0 text-center">Дата создания</th>
+                  <th class="border-0 rounded-start">Заметка
+                    <button (click)="openDescriptionTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
+                  <th class="border-0 text-center">Дата создания
+                    <button (click)="openCreateDateTimeTableFilter()" class="btn-table-header" type="button">
+                      <fa-icon [icon]="faBars"></fa-icon>
+                    </button>
+                  </th>
                   <th class="border-0 rounded-end text-center">Действие</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr *ngFor="let note of notes">
                   <td class="border-0">
-                    <a href="#" class="d-flex align-items-center">
+                    <a class="d-flex align-items-center">
                       <div><span class="">{{note.Description}}</span></div>
                     </a>
                   </td>
@@ -63,7 +71,7 @@
                 </tr>
                 </tbody>
               </table>
-              <div class="d-flex justify-content-between">
+              <div class="d-flex justify-content-between mt-2">
                 <ngb-pagination class="pe-5" [collectionSize]="dataState.collectionSize" [(page)]="dataState.page" [pageSize]="dataState.pageSize" (pageChange)="getNotes()">
                 </ngb-pagination>
 
